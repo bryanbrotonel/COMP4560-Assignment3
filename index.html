@@ -3,15 +3,35 @@
 
 <head>
 	<meta charset=utf-8>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>COMP 4560 - Assignment 3</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link rel="stylesheet" href="index.css">
+
+	<style>
+		.col {
+			margin-top: 5vh;
+		}
+	</style>
 </head>
 
-<body>
+<body class="bg-light">
+	<div class="container">
+		<div class="row justify-content-md-center align-items-center">
+			<div class="col w-100">
+				<h1>Upload CSV File</h1>
+				<input type="file">
+			</div>
+			<div class="w-100"></div>
+			<div class="col w-100">
+				<canvas class="w-100" id="myCanvas"></canvas>
+			</div>
+		</div>
+	</div>
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/threejs/r84/three.min.js"></script>
 	<script type="text/javascript" src="index.js"></script>
-	<div id="input"</div>
 </body>
 
 </html>
