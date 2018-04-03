@@ -78,7 +78,7 @@ window.onload = function() {
 
 					if (data.length == headers.length) {
 
-						j = 1;
+						j = 0;
 
 						var edge = [];
 
