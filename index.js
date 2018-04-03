@@ -29,43 +29,30 @@ window.onload = function() {
 
 			console.log(headers)
 
-			for (var i = 210; i < 243; i++) {
-				var data = allTextLines[i].split(',');
+			function parseNodes(nodes, first, last) {
 
-				if (data.length == headers.length) {
+				for (var i = first; i < last; i++) {
+					var data = allTextLines[i].split(',');
 
-					j = 0;
+					if (data.length == headers.length) {
 
-					var point = data[j++]
-					var u = parseFloat(data[j++])
-					var v = parseFloat(data[j++])
-					var n = parseFloat(data[j++])
-					var h = parseFloat(data[j++])
+						j = 0;
 
-					var node = [];
-					node.push(point.toLowerCase(), u * 3.779528, -v * 3.779528, n);
-					lNodes.push(node);
+						var point = data[j++]
+						var u = parseFloat(data[j++])
+						var v = parseFloat(data[j++])
+						var n = parseFloat(data[j++])
+						var h = parseFloat(data[j++])
+
+						var node = [];
+						node.push(point.toLowerCase(), u * 3.779528, -v * 3.779528, n);
+						nodes.push(node);
+					}
 				}
 			}
 
-			for (var i = 246; i < 279; i++) {
-				var data = allTextLines[i].split(',');
-
-				if (data.length == headers.length) {
-
-					j = 0;
-
-					var point = data[j++]
-					var u = parseFloat(data[j++])
-					var v = parseFloat(data[j++])
-					var n = parseFloat(data[j++])
-					var h = parseFloat(data[j++])
-
-					var node = [];
-					node.push(point.toLowerCase(), u * 3.779528, -v * 3.779528, n);
-					rNodes.push(node);
-				}
-			}
+			parseNodes(lNodes, 210, 243);
+			parseNodes(rNodes, 246, 279);
 
 			vertexFile = true;
 
@@ -84,39 +71,28 @@ window.onload = function() {
 			var allTextLines = (reader.result).split(/\r\n|\n/);
 			var headers = allTextLines[0].split(',');
 
-			for (var i = 1; i < allTextLines.length; i++) {
-				var data = allTextLines[i].split(',');
+			function parseLines(edges) {
 
-				if (data.length == headers.length) {
+				for (var i = 1; i < allTextLines.length; i++) {
+					var data = allTextLines[i].split(',');
 
-					j = 1;
+					if (data.length == headers.length) {
 
-					var edge = [];
+						j = 1;
 
-					var x = data[j++]
-					var y = data[j++]
+						var edge = [];
 
-					edge.push(x, y)
-					lEdges.push(edge)
+						var x = data[j++]
+						var y = data[j++]
+
+						edge.push(x, y)
+						edges.push(edge)
+					}
 				}
 			}
 
-			for (var i = 1; i < allTextLines.length; i++) {
-				var data = allTextLines[i].split(',');
-
-				if (data.length == headers.length) {
-
-					j = 1;
-
-					var edge = [];
-
-					var x = data[j++]
-					var y = data[j++]
-
-					edge.push(x, y)
-					rEdges.push(edge)
-				}
-			}
+			parseLines(lEdges);
+			parseLines(rEdges);
 
 			edgeFile = true;
 			console.log(lEdges)
@@ -133,96 +109,55 @@ window.onload = function() {
 	function sketchProc(processing) {
 		// Override draw function, by default it will be called 60 times per second
 		processing.draw = function() {
-			var backgroundColour = processing.color(0, 0, 0);
 
 			processing.size(900, 700);
-			processing.background(backgroundColour);
+			processing.background(processing.color(0, 0, 0));
 
-			var centerX = processing.width / 2,
-				centerY = processing.height / 2;
-
-			processing.translate(centerX, centerY);
+			processing.translate(processing.width / 2, processing.height / 2);
 
 			if (vertexFile) {
 
-				// LR
-				var nodeColour = processing.color(255, 0, 0);
-
-				// Draw nodes
-				processing.fill(nodeColour);
-				processing.noStroke();
-				for (var n = 0; n < lNodes.length; n++) {
-					var node = lNodes[n];
-					processing.ellipse(node[1], node[2], 5, 5);
+				function drawNodes(nodes, colour) {
+					// Draw nodes
+					processing.fill(colour);
+					processing.noStroke();
+					for (var n = 0; n < nodes.length; n++) {
+						var node = nodes[n];
+						processing.ellipse(node[1], node[2], 5, 5);
+					}
 				}
 
-				// PR
-				var nodeColour = processing.color(0, 0, 255);
-
-				// Draw nodes
-				processing.fill(nodeColour);
-				processing.noStroke();
-				for (var n = 0; n < rNodes.length; n++) {
-					var node = rNodes[n];
-					processing.ellipse(node[1], node[2], 5, 5);
-				};
-
+				drawNodes(lNodes, processing.color(255, 0, 0));
+				drawNodes(rNodes, processing.color(0, 0, 255));
 			}
 
 			if (edgeFile) {
 
-				// LR
-				var edgeColour = processing.color(255, 0, 0);
+				function drawEdges(nodes, edges, colour) {
+					processing.stroke(colour);
+					for (var e = 0; e < edges.length; e++) {
 
-				// Draw edges
-				processing.stroke(edgeColour);
-				for (var e = 0; e < lEdges.length; e++) {
+						var node0;
+						var node1;
 
-					var node0;
-					var node1;
-
-					for (var i = 0; i < lNodes.length; i++) {
-						if (lNodes[i][0] == lEdges[e][0]) {
-							node0 = lNodes[i]
+						for (var i = 0; i < nodes.length; i++) {
+							if (nodes[i][0] == edges[e][0]) {
+								node0 = nodes[i]
+							}
 						}
-					}
 
-					for (var i = 0; i < lNodes.length; i++) {
-						if (lNodes[i][0] == lEdges[e][1]) {
-							node1 = lNodes[i]
+						for (var i = 0; i < nodes.length; i++) {
+							if (nodes[i][0] == edges[e][1]) {
+								node1 = nodes[i]
+							}
 						}
+						processing.line(node0[1], node0[2], node1[1], node1[2]);
 					}
-
-					processing.line(node0[1], node0[2], node1[1], node1[2]);
 				}
 
-
-				// PR
-				var edgeColour = processing.color(0, 0, 255);
-
-				// Draw edges
-				processing.stroke(edgeColour);
-				for (var e = 0; e < rEdges.length; e++) {
-
-					var node0;
-					var node1;
-
-					for (var i = 0; i < rNodes.length; i++) {
-						if (rNodes[i][0] == rEdges[e][0]) {
-							node0 = rNodes[i]
-						}
-					}
-
-					for (var i = 0; i < rNodes.length; i++) {
-						if (rNodes[i][0] == rEdges[e][1]) {
-							node1 = rNodes[i]
-						}
-					}
-
-					processing.line(node0[1], node0[2], node1[1], node1[2]);
-				}
+				drawEdges(lNodes, lEdges, processing.color(255, 0, 0));
+				drawEdges(rNodes, rEdges, processing.color(0, 0, 255));
 			}
-
 		};
 	}
 
