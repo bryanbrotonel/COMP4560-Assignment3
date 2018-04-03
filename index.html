@@ -7,30 +7,57 @@
 	<title>COMP 4560 - Assignment 3</title>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<link rel="stylesheet" href="index.css">
 
 	<style>
-		.col {
-			margin-top: 5vh;
+		.col,
+		.container {
+			margin-top: 2vh;
+		}
+
+		#dpi {
+			height: 1in;
+			width: 1in;
+			position: absolute;
+			left: -100%;
+			top: -100%;
+
+		}
+
+		#cnvs {
+			background: black;
 		}
 	</style>
 </head>
 
 <body class="bg-light">
 	<div class="container">
+		<div id="my_mm" style="height:1mm;display:none"></div>
+		<h1>COMP 4560 - Assignment 3</h1>
 		<div class="row justify-content-md-center align-items-center">
 			<div class="col w-100">
-				<h1>Upload CSV File</h1>
-				<input type="file">
+				<div class="row">
+					<div class="col">
+						<h4>Input Verticies CSV</h4>
+						<input type="file" id="vertexFileInput" accept=".csv">
+					</div>
+					<div class="col">
+						<h4>Input Lines CSV</h4>
+						<input type="file" id="linesFileInput" accept=".csv">
+					</div>
+				</div>
 			</div>
 			<div class="w-100"></div>
-			<div class="col w-100">
-				<canvas class="w-100" id="myCanvas"></canvas>
+			<div class="col">
+				<!-- <canvas id="cnvs" width="400" height="300"/> -->
+				<canvas id="myCanvas"></canvas>
+				<!-- <canvas data-processing-sources="processing.pde"></canvas> -->
 			</div>
 		</div>
 	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.min.js"></script>
 	<script type="text/javascript" src="index.js"></script>
 </body>
 
