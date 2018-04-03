@@ -18,17 +18,21 @@ window.onload = function() {
 		return Math.floor(px / $('#my_mm').height()); //JQuery returns sizes in PX
 	};
 
-	console.log(pxTomm(3.779528))
+	console.log(pxTomm(3.779528));
 
+	// Reads the verticies from the verticies csv input
 	function readVertexFile() {
 		var reader = new FileReader();
 
 		reader.onload = function() {
 			var allTextLines = (reader.result).split(/\r\n|\n/);
+
+			// u* v* n* h* headers
 			var headers = allTextLines[245].split(',');
 
 			console.log(headers)
 
+			// Parses u* v* n* points for each perspective
 			function parseNodes(nodes, first, last) {
 
 				for (var i = first; i < last; i++) {
@@ -42,9 +46,9 @@ window.onload = function() {
 						var u = parseFloat(data[j++])
 						var v = parseFloat(data[j++])
 						var n = parseFloat(data[j++])
-						var h = parseFloat(data[j++])
 
 						var node = [];
+
 						node.push(point.toLowerCase(), u * 3.779528, -v * 3.779528, n);
 						nodes.push(node);
 					}
@@ -64,6 +68,7 @@ window.onload = function() {
 		reader.readAsBinaryString(vertexFileInput.files[0]);
 	};
 
+	// Reads the lines from the lines csv input
 	function readLinesFile() {
 		var reader = new FileReader();
 
@@ -71,6 +76,7 @@ window.onload = function() {
 			var allTextLines = (reader.result).split(/\r\n|\n/);
 			var headers = allTextLines[0].split(',');
 
+			// Parses the nodes that need to be connected
 			function parseLines(edges) {
 
 				for (var i = 1; i < allTextLines.length; i++) {
@@ -82,43 +88,50 @@ window.onload = function() {
 
 						var edge = [];
 
-						var x = data[j++]
-						var y = data[j++]
+						var n1 = data[j++]
+						var n2 = data[j++]
 
-						edge.push(x, y)
+						edge.push(n1, n2)
 						edges.push(edge)
 					}
 				}
+
+				console.log(edges);
 			}
 
 			parseLines(lEdges);
 			parseLines(rEdges);
 
 			edgeFile = true;
-			console.log(lEdges)
-			console.log(rEdges)
 
 		};
 		// start reading the file. When it is done, calls the onload event defined above.
 		reader.readAsBinaryString(linesFileInput.files[0]);
 	};
 
+	// Adds event listenter to each input
 	vertexFileInput.addEventListener('change', readVertexFile);
 	linesFileInput.addEventListener('change', readLinesFile);
 
+	// Sketches the shape with processing js
 	function sketchProc(processing) {
 		// Override draw function, by default it will be called 60 times per second
 		processing.draw = function() {
 
+			// Size of processing canvas
 			processing.size(900, 700);
+
+			// Background colour of processing canvas
 			processing.background(processing.color(0, 0, 0));
 
+			// Translates origin to centre of processing canvas
 			processing.translate(processing.width / 2, processing.height / 2);
 
+			// If vertex file is read
 			if (vertexFile) {
 
+				// Draws the verticies
 				function drawNodes(nodes, colour) {
-					// Draw nodes
 					processing.fill(colour);
 					processing.noStroke();
 					for (var n = 0; n < nodes.length; n++) {
@@ -133,6 +146,7 @@ window.onload = function() {
 
 			if (edgeFile) {
 
+				// Draws edges
 				function drawEdges(nodes, edges, colour) {
 					processing.stroke(colour);
 					for (var e = 0; e < edges.length; e++) {
@@ -141,30 +155,28 @@ window.onload = function() {
 						var node1;
 
 						for (var i = 0; i < nodes.length; i++) {
+
+							// If current node is first edge point
 							if (nodes[i][0] == edges[e][0]) {
 								node0 = nodes[i]
 							}
-						}
 
-						for (var i = 0; i < nodes.length; i++) {
+							// If current node is second edge point
 							if (nodes[i][0] == edges[e][1]) {
 								node1 = nodes[i]
 							}
 						}
+
 						processing.line(node0[1], node0[2], node1[1], node1[2]);
 					}
 				}
 
+				// Draws edges with nodes
 				drawEdges(lNodes, lEdges, processing.color(255, 0, 0));
 				drawEdges(rNodes, rEdges, processing.color(0, 0, 255));
 			}
 		};
 	}
-
-	canvas.style.width = '100%';
-	canvas.style.height = '100%';
-	canvas.width = canvas.offsetWidth;
-	canvas.height = canvas.offsetHeight;
 
 	// attaching the sketchProc function to the canvas
 	var processingInstance = new Processing(canvas, sketchProc);
